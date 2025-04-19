@@ -44,7 +44,7 @@ function Order() {
         </>)
         :
         (
-          <h2 className=' text-center tex-2xl text-white'>Not Order</h2>
+          <h2 className=' text-center text-2xl text-white pt-28 pb-28'>No Order's yet</h2>
         )
 
       }

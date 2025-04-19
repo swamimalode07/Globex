@@ -93,7 +93,7 @@ function Navbar() {
                       <img
                         className="inline-block w-10 h-10 rounded-full"
                         src="https://overreacted.io/static/profile-pic-c715447ce38098828758e525a1128b87.jpg"
-                        alt="Swami Malode" />                                        </Link>
+                        alt="Swami Malode" /> </Link>
                   </div>
                 </div>
 
@@ -133,13 +133,25 @@ function Navbar() {
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
-                <Link to={'/'} className='flex'>
-                  <div className="flex ">
-                    <h1 className=' text-2xl font-bold text-black  px-2 py-1 rounded' style={{ color: mode === 'dark' ? 'white' : '', }}>E-Bharat</h1>
-                  </div>
-                </Link>
-              </div>
+              <div className="ml-4 flex items-center lg:ml-0">
+  <Link to="/" className="flex items-center">
+    <img 
+      src="/globex.png" 
+      alt="Logo" 
+      className="h-24 w-24 object-contain m-0 p-0" 
+      style={{ marginRight: '-0.25rem' }} // Slight negative margin if needed
+    />
+    <h1 
+      className="text-3xl font-bold leading-none p-0 m-0"
+      style={{ color: mode === 'dark' ? 'white' : '' }}
+    >
+      Globex
+    </h1>
+  </Link>
+</div>
+
+
+
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
