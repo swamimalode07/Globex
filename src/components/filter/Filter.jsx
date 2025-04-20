@@ -44,7 +44,7 @@ function Filter() {
       
             {/* Filters */}
             <div className="flex items-center justify-between mt-6 mb-2">
-              <p className="font-semibold text-blue-100 dark:text-blue-300 text-base">Filters</p>
+              <p className="font-semibold text-blue-100 dark:text-blue-300 text-black">Filters</p>
               <button
                 className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium rounded-md transition-all duration-200"
                 onClick={() => {
