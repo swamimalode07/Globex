@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, fireDB } from '../../fireabase/FirebaseConfig';
 import { Timestamp, addDoc, collection } from 'firebase/firestore';
 import Loader from '../../components/loader/Loader';
+import Layout from '../../components/layout/Layout';
 
 function Signup() {
     const [name, setName] = useState("");
@@ -47,6 +48,8 @@ function Signup() {
     }
 
     return (
+        <>
+        <Layout>
         <div className=' flex justify-center items-center h-screen'>
             {loading && <Loader/>}
             <div className=' bg-gray-800 px-10 py-10 rounded-xl '>
@@ -84,15 +87,17 @@ function Signup() {
                 <div className=' flex justify-center mb-3'>
                     <button
                         onClick={signup}
-                        className=' bg-red-500 w-full text-white font-bold  px-2 py-2 rounded-lg'>
+                        className=' bg-blue-500 w-full text-white font-bold  px-2 py-2 rounded-lg'>
                         Signup
                     </button>
                 </div>
                 <div>
-                    <h2 className='text-white'>Have an account <Link className=' text-red-500 font-bold' to={'/login'}>Login</Link></h2>
+                    <h2 className='text-white'>Have an account <Link className=' text-blue-500 font-bold' to={'/login'}>Login</Link></h2>
                 </div>
             </div>
         </div>
+        </Layout>
+        </>
     )
 }
 
