@@ -6,7 +6,7 @@ function HeroSection() {
     <img 
       src="hero.png" 
    
-      alt="" 
+      alt="hero section image" 
       className="w-full h-auto object-cover" 
     />
   </div>
