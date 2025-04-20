@@ -33,16 +33,19 @@ function Cart() {
   useEffect(() => {
     let temp = 0;
     cartItems.forEach((cartItem) => {
-      temp = temp + parseInt(cartItem.price)
+      // Parse as float to handle decimal prices, with fallback to 0 if NaN
+      const itemPrice = parseFloat(cartItem.price) || 0;
+      temp = temp + itemPrice;
     })
     setTotalAmount(temp);
     console.log(temp)
   }, [cartItems])
 
-  const shipping = parseInt(100);
-
-  const grandTotal = shipping + totalAmout;
-  // console.log(grandTotal)
+  // Ensure shipping is a valid number
+  const shipping = 100;
+  
+  // Calculate grandTotal safely
+  const grandTotal = shipping + (isNaN(totalAmout) ? 0 : totalAmout);
 
   /**========================================================================
    *!                           Payment Intigration
@@ -83,12 +86,12 @@ function Cart() {
     }
 
     var options = {
-      key: "",
-      key_secret: "",
-      amount: parseInt(grandTotal * 100),
+      key: "rzp_test_VlBget8bAz9I9P",
+      key_secret: "yjZTxgwlMVOdWFfrOLsLzgnf",
+      amount: parseInt((grandTotal * 100) || 0),  // Ensure it's a valid number
       currency: "INR",
       order_receipt: 'order_rcptid_' + name,
-      name: "E-Bharat",
+      name: "Globex",
       description: "for testing purpose",
       handler: function (response) {
         console.log(response)
@@ -142,7 +145,7 @@ function Cart() {
             {cartItems.map((item, index) => {
               const { title, price, description, imageUrl } = item;
               return (
-                <div className="justify-between mb-6 rounded-lg border  drop-shadow-xl bg-white p-6  sm:flex  sm:justify-start" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '', }}>
+                <div key={index} className="justify-between mb-6 rounded-lg border  drop-shadow-xl bg-white p-6  sm:flex  sm:justify-start" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '', }}>
                   <img src={imageUrl} alt="product-image" className="w-full rounded-lg sm:w-40" />
                   <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                     <div className="mt-5 sm:mt-0">
@@ -166,17 +169,17 @@ function Cart() {
           <div className="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '', }}>
             <div className="mb-2 flex justify-between">
               <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>Subtotal</p>
-              <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{totalAmout}</p>
+              <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{totalAmout.toFixed(2)}</p>
             </div>
             <div className="flex justify-between">
               <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>Shipping</p>
-              <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{shipping}</p>
+              <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{shipping.toFixed(2)}</p>
             </div>
             <hr className="my-4" />
             <div className="flex justify-between mb-3">
               <p className="text-lg font-bold" style={{ color: mode === 'dark' ? 'white' : '' }}>Total</p>
               <div className>
-                <p className="mb-1 text-lg font-bold" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{grandTotal}</p>
+                <p className="mb-1 text-lg font-bold" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{grandTotal.toFixed(2)}</p>
               </div>
             </div>
             {/* <Modal  /> */}
