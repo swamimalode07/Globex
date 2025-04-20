@@ -138,7 +138,7 @@ function Navbar() {
     <img 
       src="/globex.png" 
       alt="Logo" 
-      className="h-24 w-24 object-contain m-0 p-0" 
+      className="h-12 w-24 object-contain m-0 p-0" 
       style={{ marginRight: '-0.25rem' }} // Slight negative margin if needed
     />
     <h1 

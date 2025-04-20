@@ -4,7 +4,8 @@ function HeroSection() {
   return (
     <div className="h-full w-full">
     <img 
-      src="image.png" 
+      src="hero.png" 
+   
       alt="" 
       className="w-full h-auto object-cover" 
     />

@@ -59,7 +59,7 @@ function DashboardTab() {
                                     <button
                                         onClick={add}
                                         type="button"
-                                        className="focus:outline-none text-white bg-blue-600 shadow-[inset_0_0_10px_rgba(0,0,0,0.6)] border hover:bg-blue-700 outline-0 font-medium rounded-lg text-sm px-5 py-2.5 mb-2" style={{ backgroundColor: mode === 'dark' ? 'rgb(46 49 55)' : '', color: mode === 'dark' ? 'white' : '', }} > <div className="flex gap-2 items-center">
+                                        className="focus:outline-none text-white mr-10 bg-blue-600 shadow-[inset_0_0_10px_rgba(0,0,0,0.6)] border hover:bg-blue-700 outline-0 font-medium rounded-lg text-sm px-5 py-2.5 mb-2" style={{ backgroundColor: mode === 'dark' ? 'rgb(46 49 55)' : '', color: mode === 'dark' ? 'white' : '', }} > <div className="flex gap-2 items-center">
                                             Add Product <FaCartPlus size={20} />
                                         </div></button>
                                 </div>
