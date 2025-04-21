@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MyContext from './myContext'
-import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, setDoc, where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { fireDB } from '../../fireabase/FirebaseConfig';
 
@@ -57,17 +57,12 @@ function myState(props) {
             console.log(error);
             setLoading(false)
         }
-        // setProducts("")
-
-
     }
 
     const [product, setProduct] = useState([]);
 
     const getProductData = async () => {
-
         setLoading(true)
-
         try {
             const q = query(
                 collection(fireDB, 'products'),
@@ -89,7 +84,6 @@ function myState(props) {
             console.log(error)
             setLoading(false)
         }
-
     }
 
     useEffect(() => {
@@ -97,7 +91,6 @@ function myState(props) {
     }, []);
 
     // update product function
-
     const edithandle = (item) => {
         setProducts(item)
     }
@@ -105,7 +98,6 @@ function myState(props) {
     const updateProduct = async () => {
         setLoading(true)
         try {
-
             await setDoc(doc(fireDB, 'products', products.id), products)
             toast.success("Product Updated successfully")
             setTimeout(() => {
@@ -113,7 +105,6 @@ function myState(props) {
             }, 800);
             getProductData();
             setLoading(false)
-
         } catch (error) {
             console.log(error)
             setLoading(false)
@@ -121,7 +112,6 @@ function myState(props) {
     }
 
     // delete product
-
     const deleteProduct = async (item) => {
         setLoading(true)
         try {
@@ -134,7 +124,6 @@ function myState(props) {
             setLoading(false)
         }
     }
-
 
     const [order, setOrder] = useState([]);
 
@@ -155,6 +144,29 @@ function myState(props) {
             setLoading(false)
         }
     }
+
+    // Delete order function
+    const deleteOrder = async (paymentId) => {
+        setLoading(true);
+        try {
+            // First, find the document with this paymentId
+            const orderRef = collection(fireDB, 'order');
+            const q = query(orderRef, where('paymentId', '==', paymentId));
+            const querySnapshot = await getDocs(q);
+            
+            // Delete each document found (should be just one)
+            querySnapshot.forEach(async (document) => {
+                await deleteDoc(doc(fireDB, 'order', document.id));
+            });
+            
+            toast.success('Order deleted successfully');
+            getOrderData(); // Refresh the order data
+        } catch (error) {
+            console.log(error);
+            toast.error('Error deleting order');
+            setLoading(false);
+        }
+    };
 
     const [user, setUser] = useState([]);
 
@@ -190,8 +202,8 @@ function myState(props) {
             mode, toggleMode, loading, setLoading,
             products, setProducts, addProduct, product,
             edithandle, updateProduct, deleteProduct, order,
-            user, searchkey, setSearchkey,filterType,setFilterType,
-            filterPrice,setFilterPrice
+            user, searchkey, setSearchkey, filterType, setFilterType,
+            filterPrice, setFilterPrice, deleteOrder
         }}>
             {props.children}
         </MyContext.Provider>

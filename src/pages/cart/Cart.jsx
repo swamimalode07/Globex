@@ -21,7 +21,7 @@ function Cart() {
 
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
-    toast.success("Delete cart")
+    toast.success("Delete from cart")
   }
 
   useEffect(() => {
