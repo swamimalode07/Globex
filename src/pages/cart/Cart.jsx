@@ -8,16 +8,12 @@ import { toast } from 'react-toastify';
 import { addDoc, collection } from 'firebase/firestore';
 import { fireDB } from '../../fireabase/FirebaseConfig';
 
-
 function Cart() {
-
   const context = useContext(myContext)
   const { mode } = context;
 
   const dispatch = useDispatch()
-
   const cartItems = useSelector((state) => state.cart);
-  console.log(cartItems)
 
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
@@ -33,23 +29,14 @@ function Cart() {
   useEffect(() => {
     let temp = 0;
     cartItems.forEach((cartItem) => {
-      // Parse as float to handle decimal prices, with fallback to 0 if NaN
       const itemPrice = parseFloat(cartItem.price) || 0;
       temp = temp + itemPrice;
     })
     setTotalAmount(temp);
-    console.log(temp)
   }, [cartItems])
 
-  // Ensure shipping is a valid number
   const shipping = 100;
-  
-  // Calculate grandTotal safely
   const grandTotal = shipping + (isNaN(totalAmout) ? 0 : totalAmout);
-
-  /**========================================================================
-   *!                           Payment Intigration
-   *========================================================================**/ 
 
   const [name, setName] = useState("")
   const [address, setAddress] = useState("");
@@ -75,26 +62,22 @@ function Cart() {
       address,
       pincode,
       phoneNumber,
-      date: new Date().toLocaleString(
-        "en-US",
-        {
-          month: "short",
-          day: "2-digit",
-          year: "numeric",
-        }
-      )
+      date: new Date().toLocaleString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      })
     }
 
     var options = {
       key: "rzp_test_VlBget8bAz9I9P",
       key_secret: "yjZTxgwlMVOdWFfrOLsLzgnf",
-      amount: parseInt((grandTotal * 100) || 0),  // Ensure it's a valid number
+      amount: parseInt((grandTotal * 100) || 0),
       currency: "INR",
       order_receipt: 'order_rcptid_' + name,
       name: "Globex",
       description: "for testing purpose",
       handler: function (response) {
-        console.log(response)
         toast.success('Payment Successful')
 
         const paymentId = response.razorpay_payment_id;
@@ -102,29 +85,23 @@ function Cart() {
         const orderInfo = {
           cartItems,
           addressInfo,
-          date: new Date().toLocaleString(
-            "en-US",
-            {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            }
-          ),
+          date: new Date().toLocaleString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          }),
           email: JSON.parse(localStorage.getItem("user")).user.email,
           userid: JSON.parse(localStorage.getItem("user")).user.uid,
           paymentId
         }
 
         try {
-
           const orderRef = collection(fireDB, 'order');
           addDoc(orderRef, orderInfo);
-
         } catch (error) {
           console.log(error)
         }
       },
-
       theme: {
         color: "#3399cc"
       }
@@ -132,41 +109,102 @@ function Cart() {
 
     var pay = new window.Razorpay(options);
     pay.open();
-    console.log(pay)
-
-
   }
+
+  const codNow = async () => {
+    if (name === "" || address === "" || pincode === "" || phoneNumber === "") {
+      return toast.error("All fields are required", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+
+    // Prepare order details for WhatsApp message
+    const orderDetails = cartItems.map(item => 
+      `${item.title} - ₹${item.price}`
+    ).join('%0A');
+
+    const message = `Hi, I want to place a COD order:%0A%0A*Order Details:*%0A${orderDetails}%0A%0A*Total Amount:* ₹${grandTotal.toFixed(2)}%0A%0A*Shipping Address:*%0A${name}%0A${address}%0A${pincode}%0A${phoneNumber}`;
+
+    // Replace with your WhatsApp number (country code + number without + or 0)
+    const whatsappUrl = `https://wa.me/9665136695?text=${message}`;
+    
+    // Save order to database
+    const addressInfo = {
+      name,
+      address,
+      pincode,
+      phoneNumber,
+      date: new Date().toLocaleString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      })
+    };
+
+    const orderInfo = {
+      cartItems,
+      addressInfo,
+      date: new Date().toLocaleString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }),
+      email: JSON.parse(localStorage.getItem("user")).user.email,
+      userid: JSON.parse(localStorage.getItem("user")).user.uid,
+      paymentId: `COD-${Date.now()}`,
+      paymentMethod: "Cash on Delivery"
+    };
+
+    try {
+      const orderRef = collection(fireDB, 'order');
+      await addDoc(orderRef, orderInfo);
+      
+      // Redirect to WhatsApp after saving order
+      window.open(whatsappUrl, '_blank');
+      
+      toast.success("COD order placed successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error placing COD order");
+    }
+  };
+
   return (
-    <Layout >
-      <div className="h-screen bg-gray-100 pt-5 mb-[60%] " style={{ backgroundColor: mode === 'dark' ? '#282c34' : '', color: mode === 'dark' ? 'white' : '', }}>
+    <Layout>
+      <div className="h-screen bg-gray-100 pt-5 mb-[60%]" style={{ backgroundColor: mode === 'dark' ? '#282c34' : '', color: mode === 'dark' ? 'white' : '' }}>
         <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
-        <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0 ">
-          <div className="rounded-lg md:w-2/3 ">
+        <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+          <div className="rounded-lg md:w-2/3">
             {cartItems.map((item, index) => {
               const { title, price, description, imageUrl } = item;
               return (
-                <div key={index} className="justify-between mb-6 rounded-lg border  drop-shadow-xl bg-white p-6  sm:flex  sm:justify-start" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '', }}>
+                <div key={index} className="justify-between mb-6 rounded-lg border drop-shadow-xl bg-white p-6 sm:flex sm:justify-start" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '' }}>
                   <img src={imageUrl} alt="product-image" className="w-full rounded-lg sm:w-40" />
                   <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                     <div className="mt-5 sm:mt-0">
                       <h2 className="text-lg font-bold text-gray-900" style={{ color: mode === 'dark' ? 'white' : '' }}>{title}</h2>
-                      <h2 className="text-sm  text-gray-900" style={{ color: mode === 'dark' ? 'white' : '' }}>{description}</h2>
+                      <h2 className="text-sm text-gray-900" style={{ color: mode === 'dark' ? 'white' : '' }}>{description}</h2>
                       <p className="mt-1 text-xs font-semibold text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{price}</p>
                     </div>
                     <div onClick={() => deleteCart(item)} className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                       </svg>
-
                     </div>
                   </div>
                 </div>
               )
             })}
-
           </div>
 
-          <div className="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '', }}>
+          <div className="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0 md:w-1/3" style={{ backgroundColor: mode === 'dark' ? 'rgb(32 33 34)' : '', color: mode === 'dark' ? 'white' : '' }}>
             <div className="mb-2 flex justify-between">
               <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>Subtotal</p>
               <p className="text-gray-700" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{totalAmout.toFixed(2)}</p>
@@ -182,7 +220,6 @@ function Cart() {
                 <p className="mb-1 text-lg font-bold" style={{ color: mode === 'dark' ? 'white' : '' }}>₹{grandTotal.toFixed(2)}</p>
               </div>
             </div>
-            {/* <Modal  /> */}
             <Modal
               name={name}
               address={address}
@@ -193,6 +230,7 @@ function Cart() {
               setPincode={setPincode}
               setPhoneNumber={setPhoneNumber}
               buyNow={buyNow}
+              codNow={codNow}
             />
           </div>
         </div>
